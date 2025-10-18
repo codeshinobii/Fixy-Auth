@@ -90,7 +90,7 @@
             document.querySelector('.spinner').style.display = 'none';
         } else if (accessToken && refreshToken) {
             // Construct the Expo development URL with tokens
-            const expoUrl = `exp://192.168.1.100:8082/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            const expoUrl = `exp://192.168.138.184:8081/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
             
             console.log('Expo URL:', expoUrl);
             
@@ -118,7 +118,7 @@
             document.querySelector('.spinner').style.display = 'none';
             
             // Still provide a fallback button
-            document.getElementById('openApp').href = 'exp://192.168.1.100:8082/--/auth/callback';
+            document.getElementById('openApp').href = 'exp://192.168.138.184:8081/--/auth/callback';
         }
     </script>
 </body>
