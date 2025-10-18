@@ -93,7 +93,7 @@
             const expoUrl = `exp://192.168.138.184:8081/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
             
             console.log('Expo URL:', expoUrl);
-            
+        
             // Try to open the app via Expo Go
             window.location.href = expoUrl;
             
