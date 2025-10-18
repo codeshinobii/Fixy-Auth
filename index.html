@@ -63,12 +63,26 @@
     </div>
 
     <script>
-        // Extract URL parameters
+        // Debug: Log current URL and parameters
+        console.log('Current URL:', window.location.href);
+        console.log('Search params:', window.location.search);
+        console.log('Hash:', window.location.hash);
+        
+        // Extract URL parameters from both search params and hash
         const urlParams = new URLSearchParams(window.location.search);
-        const accessToken = urlParams.get('access_token');
-        const refreshToken = urlParams.get('refresh_token');
-        const error = urlParams.get('error');
-        const errorDescription = urlParams.get('error_description');
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        
+        // Try to get tokens from both locations
+        const accessToken = urlParams.get('access_token') || hashParams.get('access_token');
+        const refreshToken = urlParams.get('refresh_token') || hashParams.get('refresh_token');
+        const error = urlParams.get('error') || hashParams.get('error');
+        const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+        
+        // Debug: Log extracted values
+        console.log('Access token:', accessToken);
+        console.log('Refresh token:', refreshToken);
+        console.log('Error:', error);
+        console.log('Error description:', errorDescription);
 
         if (error) {
             document.querySelector('h2').textContent = 'Authentication Error';
@@ -76,7 +90,9 @@
             document.querySelector('.spinner').style.display = 'none';
         } else if (accessToken && refreshToken) {
             // Construct the deep link URL with tokens
-            const deepLinkUrl = `fixy://auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`;
+            const deepLinkUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            
+            console.log('Deep link URL:', deepLinkUrl);
             
             // Try to open the app
             window.location.href = deepLinkUrl;
@@ -90,9 +106,19 @@
                 document.querySelector('p').textContent = 'Please make sure the Fixy app is installed, or click the button below to try again.';
             }, 3000);
         } else {
-            document.querySelector('h2').textContent = 'Invalid Link';
-            document.querySelector('p').textContent = 'This authentication link is invalid or has expired.';
+            // Show debug information
+            document.querySelector('h2').textContent = 'Debug Information';
+            document.querySelector('p').innerHTML = `
+                <strong>Current URL:</strong> ${window.location.href}<br>
+                <strong>Search params:</strong> ${window.location.search}<br>
+                <strong>Hash:</strong> ${window.location.hash}<br>
+                <strong>Access token found:</strong> ${accessToken ? 'Yes' : 'No'}<br>
+                <strong>Refresh token found:</strong> ${refreshToken ? 'Yes' : 'No'}
+            `;
             document.querySelector('.spinner').style.display = 'none';
+            
+            // Still provide a fallback button
+            document.getElementById('openApp').href = 'fixy://auth/callback';
         }
     </script>
 </body>
