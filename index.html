@@ -89,38 +89,21 @@
             document.querySelector('p').textContent = errorDescription || error;
             document.querySelector('.spinner').style.display = 'none';
         } else if (accessToken && refreshToken) {
-            // Prefer opening the standalone app scheme, then fall back to Expo Go project URL for testing
-            const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
-            const appUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
-            // Experience-scoped same-tab link for Expo Go (reuses existing Fixy tab)
-            const expoGoSameTabUrl = `exp+fixy://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
-            // Project deep link (may open a new tab if Fixy isn't open)
-            const expoGoProjectUrl = `exp://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
-
-            console.log('Attempt app URL:', appUrl);
-            console.log('Expo Go same-tab URL:', expoGoSameTabUrl);
-            console.log('Expo Go project URL:', expoGoProjectUrl);
-
-            // Try app scheme first (works for standalone builds)
-            window.location.href = appUrl;
-
-            // First fallback to Expo Go same-tab (re-uses the existing Fixy tab in Expo Go)
-            setTimeout(() => {
-                window.location.href = expoGoSameTabUrl;
-            }, 600);
-
-            // Final fallback to Expo Go project deep link (may open a new tab)
-            setTimeout(() => {
-                window.location.href = expoGoProjectUrl;
-            }, 1400);
-
-            // Update button to same-tab Expo Go URL so users can tap manually
-            document.getElementById('openApp').href = expoGoSameTabUrl;
+            // Construct the Expo development URL with tokens
+            const expoUrl = `exp://192.168.138.184:8081/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
             
-            // Fallback message if neither works after a few seconds
+            console.log('Expo URL:', expoUrl);
+            
+            // Try to open the app via Expo Go
+            window.location.href = expoUrl;
+            
+            // Update the button to use the Expo URL
+            document.getElementById('openApp').href = expoUrl;
+            
+            // Fallback: if app doesn't open in 3 seconds, show manual option
             setTimeout(() => {
                 document.querySelector('h2').textContent = 'App Not Found';
-                document.querySelector('p').textContent = 'If you are testing with Expo Go, ensure the Fixy project is opened in Expo Go. Otherwise, install the standalone app.';
+                document.querySelector('p').textContent = 'Please make sure the Fixy app is installed, or click the button below to try again.';
             }, 3000);
         } else {
             // Show debug information
@@ -134,9 +117,8 @@
             `;
             document.querySelector('.spinner').style.display = 'none';
             
-            // Still provide a fallback button (Expo Go project deep link)
-            const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
-            document.getElementById('openApp').href = `exp+fixy://u.expo.dev/${projectId}/--/auth/callback`;
+            // Still provide a fallback button
+            document.getElementById('openApp').href = 'exp://192.168.138.184:8081/--/auth/callback';
         }
     </script>
 </body>
