@@ -92,7 +92,9 @@
             // Prefer opening the standalone app scheme, then fall back to Expo Go project URL for testing
             const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
             const appUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
-            const expoGoSameTabUrl = `exp+fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            // Experience-scoped same-tab link for Expo Go (reuses existing Fixy tab)
+            const expoGoSameTabUrl = `exp+fixy://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            // Project deep link (may open a new tab if Fixy isn't open)
             const expoGoProjectUrl = `exp://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
 
             console.log('Attempt app URL:', appUrl);
@@ -134,7 +136,7 @@
             
             // Still provide a fallback button (Expo Go project deep link)
             const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
-            document.getElementById('openApp').href = `exp+fixy://auth/callback`;
+            document.getElementById('openApp').href = `exp+fixy://u.expo.dev/${projectId}/--/auth/callback`;
         }
     </script>
 </body>
