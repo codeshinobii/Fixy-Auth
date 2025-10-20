@@ -89,21 +89,29 @@
             document.querySelector('p').textContent = errorDescription || error;
             document.querySelector('.spinner').style.display = 'none';
         } else if (accessToken && refreshToken) {
-            // Construct the Expo app URL with tokens
-            const expoUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            // Prefer opening the standalone app scheme, then fall back to Expo Go project URL for testing
+            const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
+            const appUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            const expoGoUrl = `exp://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+
+            console.log('Attempt app URL:', appUrl);
+            console.log('Fallback Expo Go URL:', expoGoUrl);
+
+            // Try app scheme first (works for standalone builds)
+            window.location.href = appUrl;
+
+            // Fallback to Expo Go after a short delay (works when running in Expo Go)
+            setTimeout(() => {
+                window.location.href = expoGoUrl;
+            }, 800);
+
+            // Update button to Expo Go URL so users can tap manually in Expo Go
+            document.getElementById('openApp').href = expoGoUrl;
             
-            console.log('Expo URL:', expoUrl);
-            
-            // Try to open the app via Expo Go
-            window.location.href = expoUrl;
-            
-            // Update the button to use the Expo URL
-            document.getElementById('openApp').href = expoUrl;
-            
-            // Fallback: if app doesn't open in 3 seconds, show manual option
+            // Fallback message if neither works after a few seconds
             setTimeout(() => {
                 document.querySelector('h2').textContent = 'App Not Found';
-                document.querySelector('p').textContent = 'Please make sure the Fixy app is installed, or click the button below to try again.';
+                document.querySelector('p').textContent = 'If you are testing with Expo Go, ensure the Fixy project is opened in Expo Go. Otherwise, install the standalone app.';
             }, 3000);
         } else {
             // Show debug information
@@ -117,8 +125,9 @@
             `;
             document.querySelector('.spinner').style.display = 'none';
             
-            // Still provide a fallback button
-            document.getElementById('openApp').href = 'fixy://auth/callback';
+            // Still provide a fallback button (Expo Go project deep link)
+            const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
+            document.getElementById('openApp').href = `exp://u.expo.dev/${projectId}/--/auth/callback`;
         }
     </script>
 </body>
