@@ -92,21 +92,28 @@
             // Prefer opening the standalone app scheme, then fall back to Expo Go project URL for testing
             const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
             const appUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
-            const expoGoUrl = `exp://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            const expoGoSameTabUrl = `exp+fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            const expoGoProjectUrl = `exp://u.expo.dev/${projectId}/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
 
             console.log('Attempt app URL:', appUrl);
-            console.log('Fallback Expo Go URL:', expoGoUrl);
+            console.log('Expo Go same-tab URL:', expoGoSameTabUrl);
+            console.log('Expo Go project URL:', expoGoProjectUrl);
 
             // Try app scheme first (works for standalone builds)
             window.location.href = appUrl;
 
-            // Fallback to Expo Go after a short delay (works when running in Expo Go)
+            // First fallback to Expo Go same-tab (re-uses the existing Fixy tab in Expo Go)
             setTimeout(() => {
-                window.location.href = expoGoUrl;
-            }, 800);
+                window.location.href = expoGoSameTabUrl;
+            }, 600);
 
-            // Update button to Expo Go URL so users can tap manually in Expo Go
-            document.getElementById('openApp').href = expoGoUrl;
+            // Final fallback to Expo Go project deep link (may open a new tab)
+            setTimeout(() => {
+                window.location.href = expoGoProjectUrl;
+            }, 1400);
+
+            // Update button to same-tab Expo Go URL so users can tap manually
+            document.getElementById('openApp').href = expoGoSameTabUrl;
             
             // Fallback message if neither works after a few seconds
             setTimeout(() => {
@@ -127,7 +134,7 @@
             
             // Still provide a fallback button (Expo Go project deep link)
             const projectId = '68216ec1-e541-4d9d-a51e-733ac2aec1a7';
-            document.getElementById('openApp').href = `exp://u.expo.dev/${projectId}/--/auth/callback`;
+            document.getElementById('openApp').href = `exp+fixy://auth/callback`;
         }
     </script>
 </body>
