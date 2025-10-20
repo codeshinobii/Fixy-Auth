@@ -75,6 +75,7 @@
         // Try to get tokens from both locations
         const accessToken = urlParams.get('access_token') || hashParams.get('access_token');
         const refreshToken = urlParams.get('refresh_token') || hashParams.get('refresh_token');
+        const expoUrlParam = urlParams.get('expoUrl') || hashParams.get('expoUrl');
         const error = urlParams.get('error') || hashParams.get('error');
         const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
         
@@ -89,21 +90,24 @@
             document.querySelector('p').textContent = errorDescription || error;
             document.querySelector('.spinner').style.display = 'none';
         } else if (accessToken && refreshToken) {
-            // Construct the Expo development URL with tokens
-            const expoUrl = `exp://192.168.138.184:8081/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
-            
-            console.log('Expo URL:', expoUrl);
-            
-            // Try to open the app via Expo Go
-            window.location.href = expoUrl;
-            
-            // Update the button to use the Expo URL
-            document.getElementById('openApp').href = expoUrl;
-            
+            // Prefer expoUrl (LAN/dev) if provided, otherwise use custom scheme for prod
+            const baseUrl = expoUrlParam || 'fixy://auth/callback';
+            // Ensure we append params correctly even if base already has query
+            const joiner = baseUrl.includes('?') ? '&' : '?';
+            const appUrl = `${baseUrl}${joiner}access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+
+            console.log('App URL:', appUrl);
+
+            // Try to open the app via custom scheme
+            window.location.replace(appUrl);
+
+            // Update the button to use the app URL
+            document.getElementById('openApp').href = appUrl;
+
             // Fallback: if app doesn't open in 3 seconds, show manual option
             setTimeout(() => {
                 document.querySelector('h2').textContent = 'App Not Found';
-                document.querySelector('p').textContent = 'Please make sure the Fixy app is installed, or click the button below to try again.';
+                document.querySelector('p').textContent = 'Please make sure the Fixy app is installed, then click the button below to try again.';
             }, 3000);
         } else {
             // Show debug information
@@ -118,7 +122,7 @@
             document.querySelector('.spinner').style.display = 'none';
             
             // Still provide a fallback button
-            document.getElementById('openApp').href = 'exp://192.168.138.184:8081/--/auth/callback';
+            document.getElementById('openApp').href = expoUrlParam || 'fixy://auth/callback';
         }
     </script>
 </body>
