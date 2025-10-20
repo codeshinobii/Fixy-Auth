@@ -89,11 +89,11 @@
             document.querySelector('p').textContent = errorDescription || error;
             document.querySelector('.spinner').style.display = 'none';
         } else if (accessToken && refreshToken) {
-            // Construct the Expo development URL with tokens
-            const expoUrl = `exp://192.168.138.184:8081/--/auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
+            // Construct the Expo app URL with tokens
+            const expoUrl = `fixy://auth/callback?access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`;
             
             console.log('Expo URL:', expoUrl);
-        
+            
             // Try to open the app via Expo Go
             window.location.href = expoUrl;
             
@@ -118,7 +118,7 @@
             document.querySelector('.spinner').style.display = 'none';
             
             // Still provide a fallback button
-            document.getElementById('openApp').href = 'exp://192.168.138.184:8081/--/auth/callback';
+            document.getElementById('openApp').href = 'fixy://auth/callback';
         }
     </script>
 </body>
